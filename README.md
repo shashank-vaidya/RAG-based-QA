@@ -12,7 +12,7 @@ This repository contains a Streamlit application for RAG-based Question Answerin
 
 1. **Clone this repository**:
     ```bash
-    git clone https://github.com/yourusername/your-repo-name.git
+    git clone https://github.com/shashank-vaidya/RAG-based-QA.git
     cd your-repo-name
     ```
 
