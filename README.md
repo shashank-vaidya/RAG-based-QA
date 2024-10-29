@@ -3,7 +3,7 @@
 This repository contains a Streamlit application for RAG-based Question Answering (QA). Users can upload a PDF/txt document and ask a question. The application will analyze the document to retrieve the most relevant sections and generate an answer.
 
 ## Features
-- Upload PDF files
+- Upload PDF/txt files
 - Ask questions about the document content
 - Retrieves relevant document sections based on embeddings
 - Generates answers using LLM
