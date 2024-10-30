@@ -94,12 +94,14 @@ This project enables users to upload a PDF document and query its contents with 
 You can modify chunk size and overlap in `services.py` to better fit your documents:
 ```bash
 split_text_into_paragraphs(text, chunk_size=120, overlap=30)
+```bash
 
 ### Changing Dynamic Threshold Percentile
 
 In `retrieve_relevant_paragraphs`, adjust the percentile for dynamic thresholding:
 ```bash
 dynamic_threshold = np.percentile(all_similarity_scores, 75)
+```bash
 
 ### Using Alternative Embedding Models
 
