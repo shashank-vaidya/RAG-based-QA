@@ -90,9 +90,10 @@ def retrieve_relevant_paragraphs(client, question, embedding_model, paragraph_di
     original_paragraphs = paragraph_dict["original"]
     
     keywords = extract_keywords(question)
+
     relevant_cleaned_paragraphs = filter_paragraphs_by_keywords(paragraphs, keywords)
     if not relevant_cleaned_paragraphs:
-        relevant_cleaned_paragraphs = paragraphs
+        relevant_cleaned_paragraphs = paragraphs  # Fallback to all if no keywords matched
 
     question_variations = [question]
     question_variations += generate_question_variations(client, question)
@@ -119,7 +120,10 @@ def retrieve_relevant_paragraphs(client, question, embedding_model, paragraph_di
                 scored_paragraphs.append((original_paragraphs[i], score))
 
     scored_paragraphs = sorted(scored_paragraphs, key=lambda x: x[1], reverse=True)
-    return [paragraph for paragraph, _ in scored_paragraphs[:n_paragraphs]]
+    unique_paragraphs = list({paragraph for paragraph, _ in scored_paragraphs[:n_paragraphs]})
+    
+    return unique_paragraphs
+
 
 def similarity_check(question, paragraphs):
     question_embedding = embedding_model.encode(question)
