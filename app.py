@@ -1,8 +1,15 @@
 import streamlit as st
-from services import extract_text_from_pdf, split_text_into_sentences, retrieve_top_relevant_chunks, generate_answer_with_gpt
+from services import (
+    extract_text_from_pdf,
+    split_text_into_paragraphs,
+    store_paragraphs_in_chromadb,
+    retrieve_relevant_paragraphs,
+    generate_answer_with_gpt,
+    similarity_check
+)
 from utils import load_openai_client, load_embedding_model
 
-st.title("RAG-based QA with PDF or txt")
+st.title("RAG-based QA with Paragraph-Level Retrieval")
 
 pdf_file = st.file_uploader("Upload your PDF", type="pdf")
 question = st.text_input("Enter your question")
@@ -12,15 +19,26 @@ if pdf_file and question:
     embedding_model = load_embedding_model()
     
     text = extract_text_from_pdf(pdf_file)
-    document_chunks = split_text_into_sentences(text)
-    top_chunks = retrieve_top_relevant_chunks(embedding_model, question, document_chunks)
+    paragraph_dict = split_text_into_paragraphs(text)
     
-    answer = generate_answer_with_gpt(client, question, top_chunks)
+    store_paragraphs_in_chromadb(paragraph_dict["cleaned"])
+    
+    similarity_check(question, paragraph_dict["cleaned"])
+    
+    top_original_paragraphs = retrieve_relevant_paragraphs(client, question, embedding_model, paragraph_dict, n_paragraphs=5)
+    
+    answer = generate_answer_with_gpt(client, question, top_original_paragraphs)
+    
     st.subheader("Answer:")
     st.write(answer)
     
     st.subheader("Relevant Document Sections:")
-    for chunk in top_chunks:
-        st.write(chunk)
+    if top_original_paragraphs:
+        for idx, paragraph in enumerate(top_original_paragraphs, start=1):
+            st.markdown(f"**Section {idx}:**")
+            st.write(paragraph)
+            st.markdown("---")  
+    else:
+        st.write("No relevant sections found.")
 else:
     st.write("Please upload a PDF file and enter a question.")
